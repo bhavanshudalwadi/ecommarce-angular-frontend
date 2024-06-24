@@ -26,13 +26,14 @@ export class AuthService {
 
   loginUser(loginDetails: any) {
     this.httpClient.post(
-      `${environment.apiBaseURL}/login`,
+      `${environment.apiBaseURL}/users/login`,
       loginDetails,
       this.commonHeadersWithoutAuth
     ).subscribe({
       next: (response: any) => {
         if(response.authToken) {
           localStorage.setItem('ecomm-angular-token', response.authToken);
+          this.authToken = response.authToken
           this.router.navigateByUrl("/");
         }
       },
@@ -46,7 +47,7 @@ export class AuthService {
 
   registerUser(signUpDetails: any) {
     this.httpClient.post(
-      `${environment.apiBaseURL}/signup`,
+      `${environment.apiBaseURL}/users/signup`,
       signUpDetails,
       this.commonHeadersWithoutAuth
     ).subscribe({

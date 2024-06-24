@@ -24,7 +24,7 @@ import { AuthService } from '../../services/auth.service';
                         <li class="nav-item">
                             <a class="nav-link" routerLink="/contact">Contact</a>
                         </li>
-                        @if(!authToken) {
+                        @if(!this.authService.authToken) {
                           <li class="nav-item">
                               <a class="nav-link" routerLink="/login">Login</a>
                           </li>
@@ -38,8 +38,8 @@ import { AuthService } from '../../services/auth.service';
                             <i class="bi bi-cart-fill"></i>
                             <span class='ms-2'>Cart</span>
                         </a>
-                        @if(authToken) {
-                          <button type="button" class="btn btn-primary ms-2" style="width: 100" onClick={logoutUser}>
+                        @if(this.authService.authToken) {
+                          <button type="button" class="btn btn-primary ms-2" style="width: 100" (click)="logoutUser()">
                               <span class='me-2'>Logout</span>
                               <i class="bi bi-box-arrow-right"></i>
                           </button>
@@ -52,7 +52,9 @@ import { AuthService } from '../../services/auth.service';
   styles: ``
 })
 export class HeaderComponent {
-  authToken: string | null = null
+  constructor(public authService: AuthService, private router: Router) { }
 
-  constructor(private authService: AuthService, private router: Router) { this.authToken = this.authService.authToken }
+  logoutUser = () => {
+    this.authService.logoutUser()
+  }
 }
