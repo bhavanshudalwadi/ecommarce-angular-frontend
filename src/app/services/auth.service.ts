@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
   providedIn: 'root'
 })
 export class AuthService {
+  loading = false
   authToken = localStorage.getItem('ecomm-angular-token')
 
   commonHeadersWithoutAuth = {
@@ -25,33 +26,37 @@ export class AuthService {
   constructor(private httpClient: HttpClient, private router: Router) { }
 
   loginUser(loginDetails: any) {
+    this.loading = true
     this.httpClient.post(
       `${environment.apiBaseURL}/users/login`,
       loginDetails,
       this.commonHeadersWithoutAuth
     ).subscribe({
       next: (response: any) => {
+        this.loading = false
         if(response.authToken) {
-          localStorage.setItem('ecomm-angular-token', response.authToken);
           this.authToken = response.authToken
+          localStorage.setItem('ecomm-angular-token', response.authToken);
           this.router.navigateByUrl("/");
         }
       },
       error: (e) => {
+        this.loading = false
         alert("Login Failed");
         console.error(e);
-      },
-      complete: () => {}
+      }
     })
   }
 
   registerUser(signUpDetails: any) {
+    this.loading = true
     this.httpClient.post(
       `${environment.apiBaseURL}/users/signup`,
       signUpDetails,
       this.commonHeadersWithoutAuth
     ).subscribe({
       next: (response: any) => {
+        this.loading = false
         if(response.authToken) {
           this.router.navigateByUrl("/login");
         }else {
@@ -60,6 +65,7 @@ export class AuthService {
         }
       },
       error: (e) => {
+        this.loading = false
         alert("Signup Failed");
         console.error(e);
       },

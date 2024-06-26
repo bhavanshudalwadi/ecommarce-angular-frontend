@@ -6,6 +6,7 @@ import { ProductsComponent } from './components/products/products.component';
 import { ProductDetailsComponent } from './components/product-details/product-details.component';
 import { ContactComponent } from './components/contact/contact.component';
 import { CartComponent } from './components/cart/cart.component';
+import { OrdersComponent } from './components/orders/orders.component';
 
 export const routes: Routes = [
     {
@@ -14,11 +15,13 @@ export const routes: Routes = [
     },
     {
         path: 'login',
-        component: LoginComponent
+        component: LoginComponent,
+        canActivate: [authGuard]
     },
     {
         path: 'signup',
-        component: RegisterComponent
+        component: RegisterComponent,
+        canActivate: [authGuard]
     },
     {
         path: 'products',
@@ -35,5 +38,9 @@ export const routes: Routes = [
     {
         path: 'cart',
         component: CartComponent
+    },
+    {
+        path: 'orders',
+        component: OrdersComponent
     }
 ];

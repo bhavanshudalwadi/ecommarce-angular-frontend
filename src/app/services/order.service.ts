@@ -23,4 +23,16 @@ export class OrderService {
       return null;
     }
   }
+
+  getOrders() {
+    if(this.authService.authToken) {
+      return this.httpClient.get(
+        `${environment.apiBaseURL}/orders/get`,
+        this.authService.commonHeadersWithAuth
+      )
+    }else {
+      this.router.navigateByUrl('/login')
+      return null;
+    }
+  }
 }

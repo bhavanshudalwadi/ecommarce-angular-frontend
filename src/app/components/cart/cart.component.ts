@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DoCheck, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CartService } from '../../services/cart.service';
 import { OrderService } from '../../services/order.service';
+import { AuthService } from '../../services/auth.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-cart',
@@ -9,11 +11,12 @@ import { OrderService } from '../../services/order.service';
   imports: [
     FormsModule,
     ReactiveFormsModule,
+    RouterLink
   ],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.scss'
 })
-export class CartComponent implements OnInit {
+export class CartComponent implements OnInit, DoCheck {
   cartItems: any[] = []
 
   address: string = ""
@@ -22,13 +25,21 @@ export class CartComponent implements OnInit {
   totalItems: number = 0
   totalAmount: number = 0
 
-  constructor(private cartService: CartService, private orderService: OrderService) {}
+  constructor(private cartService: CartService, private orderService: OrderService, private authService: AuthService) {}
 
   ngOnInit() {
     this.getCarts()
   }
 
+  ngDoCheck() {
+    if(this.cartItems && this.cartItems.length > 0) {
+      this.totalItems = this.cartItems.reduce((t: number, c: any) => t + c.quantity , 0)
+      this.totalAmount = this.cartItems.reduce((t: number, c: any) => t + (c.product.price * c.quantity) , 0)
+    }
+  }
+
   getCarts = () => {
+    this.authService.loading = true
     const promise = this.cartService.getCart()
     if(promise) {
       promise.subscribe({
@@ -44,13 +55,14 @@ export class CartComponent implements OnInit {
           alert("Failed to get cart");
           console.error(e);
         },
-        complete: () => {}
+        complete: () => {this.authService.loading = false}
       })
     }
   }
 
   handleQtyUpdate = (product_id: string, qty: number) => {
     if(product_id != '' && qty >= 0) {
+      this.authService.loading = true
       const promise = this.cartService.updateCartQty(product_id, qty)
       if(promise) {
         promise.subscribe({
@@ -68,7 +80,7 @@ export class CartComponent implements OnInit {
             alert('Add to cart failed');
             console.error(e);
           },
-          complete: () => {}
+          complete: () => {this.authService.loading = false}
         })
       }
     }
@@ -77,6 +89,7 @@ export class CartComponent implements OnInit {
   handlePlaceOrder = () => {
     if(this.cartItems && Array.isArray(this.cartItems) && this.cartItems.length > 0 && this.address.trim() != '' && this.payment_mode.trim() != '') {
       let carts = [...this.cartItems]
+      this.authService.loading = true
       const promise = this.orderService.placeOrder(carts.map((c: any) => c._id), this.address.trim(), this.payment_mode.trim(), `₹ ${this.totalAmount} Cash`)
       if(promise) {
         promise.subscribe({
@@ -93,7 +106,7 @@ export class CartComponent implements OnInit {
             alert("Failed to get cart");
             console.error(e);
           },
-          complete: () => {}
+          complete: () => {this.authService.loading = false}
         })
       }
     }else {

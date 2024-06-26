@@ -2,6 +2,7 @@ import { Component, DoCheck, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ProductService } from '../../services/product.service';
 import { CartService } from '../../services/cart.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-products',
@@ -14,7 +15,7 @@ export class ProductsComponent implements OnInit, DoCheck {
   products: any[] = []
   cart: any[] = []
 
-  constructor(private productService: ProductService, private cartService: CartService) {}
+  constructor(private productService: ProductService, private cartService: CartService, private authService: AuthService) {}
 
   ngOnInit() {
     this.getProductList()
@@ -29,6 +30,7 @@ export class ProductsComponent implements OnInit, DoCheck {
   }
 
   getProductList = () => {
+    this.authService.loading = true
     this.productService.getProducts().subscribe({
       next: (response: any) => {
         if(Array.isArray(response)) {
@@ -42,7 +44,7 @@ export class ProductsComponent implements OnInit, DoCheck {
         alert("Failed to get products");
         console.error(e);
       },
-      complete: () => {}
+      complete: () => {this.authService.loading = false}
     })
   }
 
@@ -62,12 +64,13 @@ export class ProductsComponent implements OnInit, DoCheck {
           alert("Failed to get cart");
           console.error(e);
         },
-        complete: () => {}
+        complete: () => {this.authService.loading = false}
       })
     }
   }
 
   handleAddToCart = (product_id: string) => {
+    this.authService.loading = true
     if(product_id != '') {
       const promise = this.cartService.addToCart(product_id)
       if(promise) {
@@ -82,13 +85,14 @@ export class ProductsComponent implements OnInit, DoCheck {
             alert('Add to cart failed');
             console.error(e);
           },
-          complete: () => {}
+          complete: () => {this.authService.loading = false}
         })
       }
     }
   }
 
   handleQtyUpdate = (product_id: string, qty: number) => {
+    this.authService.loading = true
     if(product_id != '' && qty >= 0) {
       const promise = this.cartService.updateCartQty(product_id, qty)
       if(promise) {
@@ -107,7 +111,7 @@ export class ProductsComponent implements OnInit, DoCheck {
             alert('Add to cart failed');
             console.error(e);
           },
-          complete: () => {}
+          complete: () => {this.authService.loading = false}
         })
       }
     }

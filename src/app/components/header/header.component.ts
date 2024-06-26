@@ -31,15 +31,19 @@ import { AuthService } from '../../services/auth.service';
                           <li class="nav-item">
                               <a class="nav-link" routerLink="/signup">Signup</a>
                           </li>
+                        }@else {
+                          <li class="nav-item">
+                              <a class="nav-link" routerLink="/orders">Orders</a>
+                          </li>
                         }
                     </ul>
                     <form class="d-flex" role="search">
-                        <a type="button" class="btn btn-primary" style="width: 100" routerLink="/cart">
+                        <a type="button" class="btn btn-primary" routerLink="/cart">
                             <i class="bi bi-cart-fill"></i>
                             <span class='ms-2'>Cart</span>
                         </a>
                         @if(this.authService.authToken) {
-                          <button type="button" class="btn btn-primary ms-2" style="width: 100" (click)="logoutUser()">
+                          <button type="button" class="btn btn-danger ms-2" (click)="logoutUser()">
                               <span class='me-2'>Logout</span>
                               <i class="bi bi-box-arrow-right"></i>
                           </button>
